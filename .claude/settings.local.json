@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp:*)",
+      "Bash(cd \"C:/Users/3au4uwkos/IdeaProjects/Autohh\" && ./gradlew.bat compileJava 2>&1)",
+      "Bash(cd \"C:/Users/3au4uwkos/IdeaProjects/Autohh\" && ./gradlew.bat test 2>&1)",
+      "Bash(cd \"C:/Users/3au4uwkos/IdeaProjects/Autohh\" && ./gradlew.bat bootJar 2>&1)",
+      "Bash(cd:*)",
+      "Bash(cd \"C:/Users/3au4uwkos/IdeaProjects/Autohh\" && git rm --cached src/main/java/ru/hse/edu/mmzaitsev/autohh/AutohhApplication.java src/test/java/ru/hse/edu/mmzaitsev/autohh/AutohhApplicationTests.java 2>&1)",
+      "Bash(cd \"C:/Users/3au4uwkos/IdeaProjects/Autohh\" && docker-compose up --build 2>&1)"
+    ]
+  }
+}
