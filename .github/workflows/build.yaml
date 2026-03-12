@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [master, feature/build-ci]
+    branches: [master]
 
 jobs:
   core:
