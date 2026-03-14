@@ -1,7 +1,7 @@
 package ru.hh.match.application.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class ResumeService implements SyncResumeUseCase {
     private final CachePort cachePort;
     private final ResumeMapper resumeMapper;
     private final AppProperties appProperties;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper objectMapper;
 
     public ResumeService(HhResumePort hhResumePort,
                          SessionPort sessionPort,
@@ -37,7 +37,7 @@ public class ResumeService implements SyncResumeUseCase {
                          CachePort cachePort,
                          ResumeMapper resumeMapper,
                          AppProperties appProperties,
-                         ObjectMapper objectMapper) {
+                         JsonMapper objectMapper) {
         this.hhResumePort = hhResumePort;
         this.sessionPort = sessionPort;
         this.resumeRepository = resumeRepository;
@@ -86,7 +86,7 @@ public class ResumeService implements SyncResumeUseCase {
                 .map(json -> {
                     try {
                         return objectMapper.readValue(json, Resume.class);
-                    } catch (JsonProcessingException e) {
+                    } catch (JacksonException e) {
                         log.warn("Failed to deserialize cached resume, falling back to DB", e);
                         return null;
                     }
@@ -99,7 +99,7 @@ public class ResumeService implements SyncResumeUseCase {
         try {
             String json = objectMapper.writeValueAsString(resume);
             cachePort.set("cache:resume:" + sessionId, json, appProperties.cache().resumeTtl());
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.warn("Failed to cache resume for session {}", maskSessionId(sessionId), e);
         }
     }

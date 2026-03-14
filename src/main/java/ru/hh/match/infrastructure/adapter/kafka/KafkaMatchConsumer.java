@@ -1,7 +1,7 @@
 package ru.hh.match.infrastructure.adapter.kafka;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -25,13 +25,13 @@ public class KafkaMatchConsumer {
     private final CachePort cachePort;
     private final SseController sseController;
     private final AppProperties appProperties;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper objectMapper;
 
     public KafkaMatchConsumer(MatchResultRepository matchResultRepository,
                               CachePort cachePort,
                               SseController sseController,
                               AppProperties appProperties,
-                              ObjectMapper objectMapper) {
+                              JsonMapper objectMapper) {
         this.matchResultRepository = matchResultRepository;
         this.cachePort = cachePort;
         this.sseController = sseController;
@@ -71,7 +71,7 @@ public class KafkaMatchConsumer {
             List<MatchResult> results = matchResultRepository.findBySessionId(UUID.fromString(sessionId));
             String json = objectMapper.writeValueAsString(results);
             cachePort.set("cache:match:" + sessionId, json, appProperties.cache().matchResultsTtl());
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.warn("Failed to update match results cache for session {}", sessionId, e);
         }
     }

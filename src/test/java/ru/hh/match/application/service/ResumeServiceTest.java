@@ -1,6 +1,6 @@
 package ru.hh.match.application.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,7 +38,7 @@ class ResumeServiceTest {
     @Mock private CachePort cachePort;
     @Mock private ResumeMapper resumeMapper;
     @Mock private AppProperties appProperties;
-    @Spy private ObjectMapper objectMapper = new ObjectMapper();
+    @Spy private JsonMapper jsonMapper = JsonMapper.builder().build();
 
     @InjectMocks private ResumeService resumeService;
 

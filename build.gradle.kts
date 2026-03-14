@@ -30,9 +30,7 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
 
-    // JSON
-    implementation("com.fasterxml.jackson.core:jackson-databind")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    // JSON (Jackson 3 provided by spring-boot-starter-jackson via starter-web)
 
     // Logging
     implementation("ch.qos.logback:logback-classic")

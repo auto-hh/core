@@ -1,6 +1,6 @@
 package ru.hh.match.presentation.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +23,7 @@ class MatchingControllerTest {
     @Mock private MatchResultRepository matchResultRepository;
     @Mock private CachePort cachePort;
     @Mock private SseController sseController;
-    @Mock private ObjectMapper objectMapper;
+    @Mock private JsonMapper jsonMapper;
 
     @InjectMocks private MatchingController matchingController;
 

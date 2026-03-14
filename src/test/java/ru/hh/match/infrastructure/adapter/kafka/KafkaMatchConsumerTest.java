@@ -1,6 +1,6 @@
 package ru.hh.match.infrastructure.adapter.kafka;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,7 +33,7 @@ class KafkaMatchConsumerTest {
     @Mock private CachePort cachePort;
     @Mock private SseController sseController;
     @Mock private AppProperties appProperties;
-    @Spy private ObjectMapper objectMapper = new ObjectMapper();
+    @Spy private JsonMapper jsonMapper = JsonMapper.builder().build();
 
     @InjectMocks private KafkaMatchConsumer kafkaMatchConsumer;
 

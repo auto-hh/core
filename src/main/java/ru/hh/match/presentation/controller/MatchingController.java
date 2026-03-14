@@ -1,7 +1,7 @@
 package ru.hh.match.presentation.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -34,13 +34,13 @@ public class MatchingController {
     private final MatchResultRepository matchResultRepository;
     private final CachePort cachePort;
     private final SseController sseController;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper objectMapper;
 
     public MatchingController(StartMatchingUseCase startMatchingUseCase,
                               MatchResultRepository matchResultRepository,
                               CachePort cachePort,
                               SseController sseController,
-                              ObjectMapper objectMapper) {
+                              JsonMapper objectMapper) {
         this.startMatchingUseCase = startMatchingUseCase;
         this.matchResultRepository = matchResultRepository;
         this.cachePort = cachePort;
