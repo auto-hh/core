@@ -56,6 +56,15 @@ public class Resume {
     @Column(name = "edu_year")
     private String eduYear = "";
 
+    @Column(length = 32)
+    private String status = "published";
+
+    @Column(name = "is_active")
+    private Boolean isActive = false;
+
+    @Column(name = "hh_url", length = 512)
+    private String hhUrl = "";
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -116,6 +125,15 @@ public class Resume {
 
     public String getEduYear() { return eduYear; }
     public void setEduYear(String eduYear) { this.eduYear = eduYear; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public boolean isActive() { return isActive != null && isActive; }
+    public void setActive(boolean active) { isActive = active; }
+
+    public String getHhUrl() { return hhUrl; }
+    public void setHhUrl(String hhUrl) { this.hhUrl = hhUrl; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }

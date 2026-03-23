@@ -33,7 +33,7 @@ class HhResumeAdapterTest {
         var hhApi = new AppProperties.HhApi("https://api.hh.ru", "Test/1.0", rateLimit, endpoints);
         when(appProperties.hhApi()).thenReturn(hhApi);
 
-        var resumeList = new HhResumeListDto(List.of(new HhResumeListDto.HhResumeListItem("abc123")));
+        var resumeList = new HhResumeListDto(List.of(new HhResumeListDto.HhResumeListItem("abc123", "Java Dev", null, null)));
         when(hhApiClient.get(eq("/resumes/mine"), eq("token"), eq(HhResumeListDto.class)))
                 .thenReturn(resumeList);
 

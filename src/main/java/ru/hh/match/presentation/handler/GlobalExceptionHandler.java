@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.hh.match.domain.exception.HhApiException;
+import ru.hh.match.domain.exception.HhTokenExpiredException;
 import ru.hh.match.domain.exception.MatchingException;
 import ru.hh.match.domain.exception.ResumeNotFoundException;
 import ru.hh.match.domain.exception.SessionNotFoundException;
@@ -29,6 +30,13 @@ public class GlobalExceptionHandler {
         log.error("Resume not found: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.fail(ex.getMessage()));
+    }
+
+    @ExceptionHandler(HhTokenExpiredException.class)
+    public ResponseEntity<ApiResponse<Void>> handleHhTokenExpired(HhTokenExpiredException ex) {
+        log.error("HH API token expired: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.fail("HH API token expired, re-authentication required"));
     }
 
     @ExceptionHandler(HhApiException.class)

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.hh.match.application.port.in.SearchVacanciesUseCase;
 import ru.hh.match.domain.model.Vacancy;
@@ -24,8 +25,11 @@ public class VacancyController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<VacancyResponse>>> searchVacancies(
-            @CookieValue("session_id") UUID sessionId) {
-        List<Vacancy> vacancies = searchVacanciesUseCase.searchVacancies(sessionId);
+            @CookieValue("session_id") UUID sessionId,
+            @RequestParam(required = false) String query) {
+        List<Vacancy> vacancies = (query != null && !query.isBlank())
+                ? searchVacanciesUseCase.searchVacancies(sessionId, query)
+                : searchVacanciesUseCase.searchVacancies(sessionId);
         List<VacancyResponse> responses = vacancies.stream()
                 .map(v -> new VacancyResponse(
                         v.getId(),

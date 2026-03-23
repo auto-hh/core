@@ -6,4 +6,6 @@ import java.util.UUID;
 public interface SessionPort {
 
     Optional<String> getAccessToken(UUID sessionId);
+
+    void deleteAccessToken(UUID sessionId);
 }

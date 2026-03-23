@@ -51,9 +51,6 @@ public class VacancyService implements SearchVacanciesUseCase {
 
     @Override
     public List<Vacancy> searchVacancies(UUID sessionId) {
-        String accessToken = sessionPort.getAccessToken(sessionId)
-                .orElseThrow(() -> new SessionNotFoundException("Session not found: " + sessionId));
-
         Resume resume = resumeRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> new ResumeNotFoundException("Resume not found for session: " + sessionId));
 
@@ -62,7 +59,8 @@ public class VacancyService implements SearchVacanciesUseCase {
 
         log.info("Searching vacancies for session {}, query: {}", maskSessionId(sessionId), query);
 
-        List<HhVacancyDto> hhVacancies = hhVacancyPort.searchVacancies(accessToken, query, limit);
+        // Use public API for vacancy search (no auth token needed)
+        List<HhVacancyDto> hhVacancies = hhVacancyPort.searchVacanciesPublic(query, limit);
 
         List<Vacancy> result = new ArrayList<>();
         for (HhVacancyDto dto : hhVacancies) {
@@ -75,6 +73,28 @@ public class VacancyService implements SearchVacanciesUseCase {
         }
 
         log.info("Found {} vacancies for session {}", result.size(), maskSessionId(sessionId));
+        return result;
+    }
+
+    @Override
+    public List<Vacancy> searchVacancies(UUID sessionId, String query) {
+        int limit = appProperties.vacancy().searchLimit();
+
+        log.info("Searching vacancies for session {}, custom query: {}", maskSessionId(sessionId), query);
+
+        List<HhVacancyDto> hhVacancies = hhVacancyPort.searchVacanciesPublic(query, limit);
+
+        List<Vacancy> result = new ArrayList<>();
+        for (HhVacancyDto dto : hhVacancies) {
+            Vacancy vacancy = vacancyRepository.findByHhVacancyId(dto.id())
+                    .orElseGet(() -> {
+                        Vacancy newVacancy = vacancyMapper.toEntity(dto);
+                        return vacancyRepository.save(newVacancy);
+                    });
+            result.add(vacancy);
+        }
+
+        log.info("Found {} vacancies for session {} (custom query)", result.size(), maskSessionId(sessionId));
         return result;
     }
 

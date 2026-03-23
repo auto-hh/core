@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import ru.hh.match.application.port.in.StartMatchingUseCase;
 import ru.hh.match.application.port.out.CachePort;
 import ru.hh.match.domain.model.MatchResult;
 import ru.hh.match.domain.repository.MatchResultRepository;
+import ru.hh.match.presentation.dto.request.StartMatchRequest;
 import ru.hh.match.presentation.dto.response.ApiResponse;
 import ru.hh.match.presentation.dto.response.MatchResultResponse;
 
@@ -50,8 +52,16 @@ public class MatchingController {
 
     @PostMapping("/start")
     public ResponseEntity<ApiResponse<Map<String, Integer>>> startMatching(
-            @CookieValue("session_id") UUID sessionId) {
-        int sentCount = startMatchingUseCase.startMatching(sessionId);
+            @CookieValue("session_id") UUID sessionId,
+            @RequestBody(required = false) StartMatchRequest request) {
+        int sentCount;
+        String query = (request != null && request.query() != null && !request.query().isBlank())
+                ? request.query() : null;
+        if (request != null && request.resumeId() != null && !request.resumeId().isBlank()) {
+            sentCount = startMatchingUseCase.startMatching(sessionId, request.resumeId(), query);
+        } else {
+            sentCount = startMatchingUseCase.startMatching(sessionId, query);
+        }
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(ApiResponse.ok(Map.of("sentRequests", sentCount)));
     }

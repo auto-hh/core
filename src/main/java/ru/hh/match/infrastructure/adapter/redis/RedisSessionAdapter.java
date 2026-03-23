@@ -17,7 +17,12 @@ public class RedisSessionAdapter implements SessionPort {
 
     @Override
     public Optional<String> getAccessToken(UUID sessionId) {
-        String token = redisTemplate.opsForValue().get("session:" + sessionId);
+        String token = redisTemplate.opsForValue().get("access_token_" + sessionId);
         return Optional.ofNullable(token);
+    }
+
+    @Override
+    public void deleteAccessToken(UUID sessionId) {
+        redisTemplate.delete("access_token_" + sessionId);
     }
 }

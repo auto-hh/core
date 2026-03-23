@@ -8,6 +8,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.hh.match.application.port.in.SearchVacanciesUseCase;
+import ru.hh.match.application.port.in.SyncResumeUseCase;
 import ru.hh.match.application.port.out.MatchRequestPort;
 import ru.hh.match.application.port.out.SessionPort;
 import ru.hh.match.domain.exception.SessionNotFoundException;
@@ -31,6 +33,8 @@ import static org.mockito.Mockito.when;
 class MatchingServiceTest {
 
     @Mock private SessionPort sessionPort;
+    @Mock private SyncResumeUseCase syncResumeUseCase;
+    @Mock private SearchVacanciesUseCase searchVacanciesUseCase;
     @Mock private ResumeRepository resumeRepository;
     @Mock private VacancyRepository vacancyRepository;
     @Mock private MatchResultRepository matchResultRepository;

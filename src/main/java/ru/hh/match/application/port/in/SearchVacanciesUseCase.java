@@ -7,4 +7,6 @@ import ru.hh.match.domain.model.Vacancy;
 public interface SearchVacanciesUseCase {
 
     List<Vacancy> searchVacancies(UUID sessionId);
+
+    List<Vacancy> searchVacancies(UUID sessionId, String query);
 }

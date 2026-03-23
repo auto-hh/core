@@ -6,10 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.hh.match.application.port.in.StartMatchingUseCase;
+import ru.hh.match.application.port.in.SearchVacanciesUseCase;
 import ru.hh.match.application.port.out.MatchRequestPort;
 import ru.hh.match.application.port.out.SessionPort;
 import ru.hh.match.domain.exception.MatchingException;
-import ru.hh.match.domain.exception.ResumeNotFoundException;
 import ru.hh.match.domain.exception.SessionNotFoundException;
 import ru.hh.match.domain.model.MatchResult;
 import ru.hh.match.domain.model.Resume;
@@ -26,17 +26,23 @@ public class MatchingService implements StartMatchingUseCase {
     private static final Logger log = LoggerFactory.getLogger(MatchingService.class);
 
     private final SessionPort sessionPort;
+    private final ResumeService resumeService;
+    private final SearchVacanciesUseCase searchVacanciesUseCase;
     private final ResumeRepository resumeRepository;
     private final VacancyRepository vacancyRepository;
     private final MatchResultRepository matchResultRepository;
     private final MatchRequestPort matchRequestPort;
 
     public MatchingService(SessionPort sessionPort,
+                           ResumeService resumeService,
+                           SearchVacanciesUseCase searchVacanciesUseCase,
                            ResumeRepository resumeRepository,
                            VacancyRepository vacancyRepository,
                            MatchResultRepository matchResultRepository,
                            MatchRequestPort matchRequestPort) {
         this.sessionPort = sessionPort;
+        this.resumeService = resumeService;
+        this.searchVacanciesUseCase = searchVacanciesUseCase;
         this.resumeRepository = resumeRepository;
         this.vacancyRepository = vacancyRepository;
         this.matchResultRepository = matchResultRepository;
@@ -45,22 +51,54 @@ public class MatchingService implements StartMatchingUseCase {
 
     @Override
     public int startMatching(UUID sessionId) {
+        return startMatching(sessionId, (String) null);
+    }
+
+    @Override
+    public int startMatching(UUID sessionId, String query) {
         sessionPort.getAccessToken(sessionId)
                 .orElseThrow(() -> new SessionNotFoundException("Session not found: " + sessionId));
 
-        Resume resume = resumeRepository.findBySessionId(sessionId)
-                .orElseThrow(() -> new ResumeNotFoundException("Resume not found for session: " + sessionId));
+        Resume resume = resumeRepository.findBySessionIdAndIsActiveTrue(sessionId)
+                .orElseThrow(() -> new MatchingException("No active resume selected. Please activate a resume first."));
 
+        // Search vacancies with custom query or resume-based query
+        if (query != null && !query.isBlank()) {
+            searchVacanciesUseCase.searchVacancies(sessionId, query);
+        } else {
+            searchVacanciesUseCase.searchVacancies(sessionId);
+        }
+
+        return doMatching(sessionId, resume);
+    }
+
+    @Override
+    public int startMatching(UUID sessionId, String hhResumeId, String query) {
+        // Sync the selected resume from HH API
+        Resume resume = resumeService.syncResume(sessionId, hhResumeId);
+
+        // Search vacancies with custom query or resume-based query
+        if (query != null && !query.isBlank()) {
+            searchVacanciesUseCase.searchVacancies(sessionId, query);
+        } else {
+            searchVacanciesUseCase.searchVacancies(sessionId);
+        }
+
+        return doMatching(sessionId, resume);
+    }
+
+    private int doMatching(UUID sessionId, Resume resume) {
         List<Vacancy> vacancies = vacancyRepository.findAll();
+
+        if (vacancies.isEmpty()) {
+            log.warn("No vacancies found in DB for session {}", maskSessionId(sessionId));
+            return 0;
+        }
 
         int sentCount = 0;
         for (Vacancy vacancy : vacancies) {
             try {
                 var existingMatch = matchResultRepository.findByResumeIdAndVacancyId(resume.getId(), vacancy.getId());
-
-                if (existingMatch.isPresent() && existingMatch.get().getStatus() == MatchStatus.COMPLETED) {
-                    continue;
-                }
 
                 MatchResult matchResult = existingMatch.orElseGet(() -> {
                     MatchResult mr = new MatchResult();

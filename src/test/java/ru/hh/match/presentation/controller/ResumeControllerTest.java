@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import ru.hh.match.application.port.in.ListResumesUseCase;
 import ru.hh.match.application.port.in.SyncResumeUseCase;
 import ru.hh.match.domain.model.Resume;
 import ru.hh.match.presentation.dto.response.ApiResponse;
@@ -19,6 +20,7 @@ import static org.mockito.Mockito.when;
 class ResumeControllerTest {
 
     @Mock private SyncResumeUseCase syncResumeUseCase;
+    @Mock private ListResumesUseCase listResumesUseCase;
 
     @InjectMocks private ResumeController resumeController;
 

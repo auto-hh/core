@@ -5,16 +5,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record HhResumeListDto(
-    int found,
-    List<HhResumeListItem> items
+public record HhMeDto(
+    String id,
+    @JsonProperty("first_name") String firstName,
+    @JsonProperty("last_name") String lastName,
+    @JsonProperty("middle_name") String middleName,
+    String email,
+    @JsonProperty("is_applicant") Boolean isApplicant,
+    @JsonProperty("resumes_url") String resumesUrl,
+    List<Resume> resumes
 ) {
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record HhResumeListItem(
+    public record Resume(
         String id,
         String title,
-        String url,
-        @JsonProperty("alternate_url") String alternateUrl,
         Status status,
         @JsonProperty("updated_at") String updatedAt
     ) {}

@@ -1,6 +1,5 @@
 package ru.hh.match.infrastructure.mapper;
 
-import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import ru.hh.match.domain.model.Resume;
@@ -11,6 +10,11 @@ public class ResumeMapper {
 
     public Resume toEntity(HhResumeDto dto) {
         Resume resume = new Resume();
+        updateFromDto(dto, resume);
+        return resume;
+    }
+
+    public void updateFromDto(HhResumeDto dto, Resume resume) {
         resume.setHhResumeId(dto.id());
         resume.setJobTitle(dto.title() != null ? dto.title() : "");
         resume.setLocation(dto.area() != null && dto.area().name() != null ? dto.area().name() : "");
@@ -42,15 +46,17 @@ public class ResumeMapper {
             resume.setExpText(expText);
         }
 
-        resume.setGrade(determineGrade(resume.getExpCount()));
-
         if (dto.education() != null && dto.education().primary() != null && !dto.education().primary().isEmpty()) {
             var primary = dto.education().primary().getFirst();
             resume.setEduUni(primary.name() != null ? primary.name() : "");
             resume.setEduYear(primary.year() != null ? String.valueOf(primary.year()) : "");
         }
 
-        return resume;
+        resume.setGrade(determineGrade(resume.getExpCount()));
+
+        // Map new fields
+        resume.setStatus(dto.status() != null ? dto.status().id() : "published");
+        resume.setHhUrl(dto.alternateUrl() != null ? dto.alternateUrl() : "");
     }
 
     private String determineGrade(int yearsOfExperience) {

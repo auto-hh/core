@@ -32,7 +32,7 @@ class MatchingControllerTest {
         UUID sessionId = UUID.randomUUID();
         when(startMatchingUseCase.startMatching(sessionId)).thenReturn(10);
 
-        var response = matchingController.startMatching(sessionId);
+        var response = matchingController.startMatching(sessionId, null);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
         assertThat(response.getBody()).isNotNull();

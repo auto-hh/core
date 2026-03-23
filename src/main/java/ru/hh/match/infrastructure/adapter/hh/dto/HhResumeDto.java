@@ -8,6 +8,8 @@ import java.util.List;
 public record HhResumeDto(
     String id,
     String title,
+    @JsonProperty("alternate_url") String alternateUrl,
+    Status status,
     Area area,
     Salary salary,
     @JsonProperty("skill_set") List<String> skillSet,
@@ -16,6 +18,9 @@ public record HhResumeDto(
     List<Experience> experience,
     Education education
 ) {
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record Status(String id, String name) {}
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Area(String name) {}
 

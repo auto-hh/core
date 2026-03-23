@@ -41,14 +41,16 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "ru.hh.match.*"
+        spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: ru.hh.match.infrastructure.adapter.kafka.dto.MatchResponseMessage
       auto-offset-reset: earliest
 
 # ========== APPLICATION-SPECIFIC ==========
 app:
   hh-api:
     base-url: https://api.hh.ru
-    user-agent: "HhMatchService/0.1 (contact@example.com)"
+    user-agent: "AutoHH/1.0.0 (dev@mail.ru)"
     rate-limit:
       max-requests-per-second: 5
       retry-max-attempts: 3
